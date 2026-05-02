@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .sidebar-link {
+    @apply flex items-center px-4 py-3 text-white/90 hover:bg-white/10 transition-colors;
+  }
+  .sidebar-link.active {
+    @apply bg-white/20 border-r-4 border-blue-300;
+  }
+}
+
+.logo {
+    width:130px !important;
+    height: 250px !important;
+    background-image: url("https://lmsg1.himsb.edu.eg/pluginfile.php/1/theme_academi/logo/1762726301/HIMS.png");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+
+}
+
+select option {
+  color: black !important;
+}
+
+/* أنيميشنات بسيطة ونظيفة - أضفها إلى ملف CSS العام */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+
+/* أضف هذا الأنيميشن إلى ملف CSS العام */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+
+/* أضف هذه الأنيميشنات إلى ملف CSS العام (globals.css أو أي ملف CSS رئيسي) */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInDown {
+  animation: fadeInDown 0.5s ease-out forwards;
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.5s ease-out forwards;
+  opacity: 0; /* يبدأ شفافاً ثم يظهر */
+}
+
+
+/* أنيميشن ظهور سلس - أضفه في ملف CSS العام */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out forwards;
+}
