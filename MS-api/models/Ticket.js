@@ -35,7 +35,8 @@ const ticketSchema = new mongoose.Schema({
       createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       createdAt: { type: Date, default: Date.now }
     }
-  ]
+  ],
+completedAt: { type: Date, default: null }
 }, { timestamps: true });
 
 // توليد رقم التذكرة تلقائياً

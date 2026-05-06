@@ -90,8 +90,8 @@ export default function Dashboard() {
                 <th className="px-5 py-3 text-right font-semibold">رقم التذكرة</th>
                 <th className="px-5 py-3 text-right font-semibold">المشكلة</th>
                 <th className="px-5 py-3 text-right font-semibold">الحالة</th>
-                <th className="px-5 py-3 text-right font-semibold">التاريخ</th>
-                <th className="px-5 py-3 text-right font-semibold">الإجراء</th>
+                <th className="px-5 py-3 text-right font-semibold">تاريخ الطلب</th>
+                <th className="px-5 py-3 text-right font-semibold">#</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
