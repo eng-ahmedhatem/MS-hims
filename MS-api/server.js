@@ -8,6 +8,7 @@ const ticketRoutes = require('./routes/tickets');
 const userRoutes = require('./routes/users');
 const dashboardRoutes = require('./routes/dashboard');
 const settingsRoutes = require('./routes/settings');
+const reportRoutes = require('./routes/reports');
 
 const app = express();
 connectDB();
@@ -20,6 +21,7 @@ app.use('/api/tickets', ticketRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/reports', reportRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
