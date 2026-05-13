@@ -1,61 +1,79 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MdLogin, MdSearch, MdAddCircle, MdEngineering } from 'react-icons/md';
+import { FiLogIn, FiSearch, FiPlusCircle, FiTool } from 'react-icons/fi';
+import axios from '../api/axios';
 
 export default function HomePage() {
+  const [institution, setInstitution] = useState('المعهد العالي للعلوم الإدارية ببلقاس');
+
+  useEffect(() => {
+    // محاولة جلب اسم المؤسسة إذا كان الإعداد متاحًا للعامة
+    axios.get('/api/settings')
+      .then(res => {
+        if (res.data.institutionName) setInstitution(res.data.institutionName);
+      })
+      .catch(() => {}); // تجاهل الخطأ والإبقاء على الاسم الافتراضي
+  }, []);
+
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-[#0a1929] via-[#0d2137] to-[#001a42] font-almarai">
-      {/* تأثيرات نيون خلفية */}
-      <div className="absolute top-0 -left-40 w-[600px] h-[600px] bg-[#0058be] opacity-30 blur-[100px] rounded-full animate-pulse"></div>
-      <div className="absolute bottom-0 -right-40 w-[600px] h-[600px] bg-[#2170e4] opacity-20 blur-[100px] rounded-full animate-pulse delay-1000"></div>
+    <div className="min-h-screen font-cairo relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-indigo-50/30 flex items-center justify-center p-4">
+      {/* موجات خلفية زجاجية */}
+      <div className="absolute top-0 left-0 w-full overflow-hidden leading-none z-0">
+        <svg className="relative block w-full h-40 md:h-64 text-indigo-100/60" viewBox="0 0 1440 200" preserveAspectRatio="none">
+          <path d="M0,100 C360,200 720,0 1080,100 C1260,160 1380,120 1440,100 L1440,0 L0,0 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none rotate-180 z-0">
+        <svg className="relative block w-full h-40 md:h-64 text-indigo-100/60" viewBox="0 0 1440 200" preserveAspectRatio="none">
+          <path d="M0,100 C360,200 720,0 1080,100 C1260,160 1380,120 1440,100 L1440,0 L0,0 Z" fill="currentColor"/>
+        </svg>
+      </div>
 
-      {/* خطوط شبكة تقنية */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
-
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
-        {/* الشعار والعنوان */}
-        <div className="text-center mb-8">
-          <div className="inline-block p-4 bg-white/10 backdrop-blur-xl rounded-3xl shadow-[0_0_30px_rgba(0,88,190,0.3)] mb-6">
-            <MdEngineering className="text-6xl text-[#5B9BD5] drop-shadow-[0_0_10px_rgba(33,112,228,0.8)]" />
+      <div className="relative z-10 w-full max-w-2xl mx-auto text-center">
+        {/* الشعار */}
+        <div className="mb-8">
+          <div className="inline-block p-5 bg-white/70 backdrop-blur-xl rounded-3xl shadow-xl border border-white/60 mb-6">
+            <FiTool className="w-16 h-16 text-indigo-600" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-3 tracking-tight">
-            نظام <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5B9BD5] to-[#2170e4]">إدارة الصيانة <br></br> - المعهد العالي للعلوم الإدارية ببلقاس</span>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4 leading-tight">
+            نظام إدارة الصيانة
           </h1>
-          <p className="text-lg text-[#a0c4e8] max-w-xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-600 mb-2">{institution}</p>
+          <p className="text-base text-gray-500 max-w-md mx-auto leading-relaxed">
             المنصة الذكية لإدارة طلبات الصيانة ومتابعتها بكل كفاءة وسهولة
           </p>
         </div>
 
-        {/* أزرار الإجراءات الرئيسية */}
-        <div className="flex flex-wrap gap-6 justify-center mt-8">
+        {/* أزرار الإجراءات */}
+        <div className="flex flex-wrap gap-4 justify-center mt-10">
           <Link
             to="/login"
-            className="group relative px-8 py-4 bg-white/10 backdrop-blur-xl border border-[#2170e4]/40 rounded-2xl text-white font-bold text-lg hover:bg-[#2170e4]/20 transition-all duration-300 shadow-[0_0_20px_rgba(33,112,228,0.2)] hover:shadow-[0_0_40px_rgba(33,112,228,0.4)] hover:border-[#5B9BD5] hover:-translate-y-1"
+            className="inline-flex items-center gap-3 bg-white/70 backdrop-blur-xl border border-white/60 rounded-2xl px-8 py-4 text-gray-800 font-bold text-lg shadow-lg hover:shadow-xl hover:bg-white/90 transition-all duration-300 hover:-translate-y-1"
           >
-            <span className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#0058be] to-[#2170e4] opacity-0 group-hover:opacity-20 transition-opacity"></span>
-            <MdLogin className="inline-block ml-2 text-2xl" />
+            <FiLogIn className="w-6 h-6 text-indigo-600" />
             تسجيل الدخول
           </Link>
 
           <Link
             to="/track"
-            className="group relative px-8 py-4 bg-white/10 backdrop-blur-xl border border-[#2170e4]/40 rounded-2xl text-white font-bold text-lg hover:bg-[#2170e4]/20 transition-all duration-300 shadow-[0_0_20px_rgba(33,112,228,0.2)] hover:shadow-[0_0_40px_rgba(33,112,228,0.4)] hover:border-[#5B9BD5] hover:-translate-y-1"
+            className="inline-flex items-center gap-3 bg-white/70 backdrop-blur-xl border border-white/60 rounded-2xl px-8 py-4 text-gray-800 font-bold text-lg shadow-lg hover:shadow-xl hover:bg-white/90 transition-all duration-300 hover:-translate-y-1"
           >
-            <MdSearch className="inline-block ml-2 text-2xl" />
+            <FiSearch className="w-6 h-6 text-indigo-600" />
             متابعة طلب
           </Link>
 
           <Link
             to="/create"
-            className="group relative px-8 py-4 bg-gradient-to-r from-[#0058be] to-[#2170e4] backdrop-blur-xl border border-[#5B9BD5]/50 rounded-2xl text-white font-bold text-lg hover:from-[#2170e4] hover:to-[#0058be] transition-all duration-300 shadow-[0_0_30px_rgba(33,112,228,0.4)] hover:shadow-[0_0_50px_rgba(33,112,228,0.7)] hover:scale-105"
+            className="inline-flex items-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl px-8 py-4 font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
           >
-            <MdAddCircle className="inline-block ml-2 text-2xl" />
+            <FiPlusCircle className="w-6 h-6" />
             إنشاء طلب جديد
           </Link>
         </div>
 
-        {/* تذييل المصمم */}
-        <div className="absolute bottom-6 text-center text-[#a0c4e8]/70 text-sm">
-          <p>تم التنفيذ بواسطة <span className="font-bold text-white">م/ أحمد حاتم</span></p>
+        {/* التذييل */}
+        <div className="mt-12 text-gray-400 text-sm">
+          <p>تم التنفيذ بواسطة <span className="font-bold text-gray-600">م/ أحمد حاتم</span></p>
         </div>
       </div>
     </div>

@@ -19,6 +19,16 @@ const ticketSchema = new mongoose.Schema({
     enum: ['جديد', 'قيد المراجعة', 'قيد التنفيذ', 'مكتمل', 'ملغي'],
     default: 'جديد'
   },
+  creatorStatus: {
+  type: String,
+  enum: ['تم الإصلاح', 'لم يتم الإصلاح'],
+  default: null
+},
+technicianStatus: {
+  type: String,
+  enum: ['تم الإصلاح', 'لم يتم الإصلاح'],
+  default: null
+},
   createdBy: {
     name: { type: String, required: true },
     office: { type: String },
