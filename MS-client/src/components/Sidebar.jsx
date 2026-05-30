@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import NotificationBell from './NotificationBell';
 import {
   FiHome, FiList, FiPlusCircle, FiUsers, FiBarChart2,
   FiSettings, FiLogOut, FiMenu, FiX
@@ -45,23 +46,26 @@ export default function Sidebar() {
         <FiMenu className="w-6 h-6" />
       </button>
 
-      {/* خلفية معتمة عند فتح الشريط في الجوال */}
+      {/* خلفية معتمة */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden transition-opacity"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden"
           onClick={closeSidebar}
         />
       )}
 
       {/* الشريط الجانبي */}
       <aside
-        className={`fixed top-0 right-0 h-full w-72 bg-white/80 backdrop-blur-xl border-l border-white/60 shadow-2xl flex flex-col font-cairo z-50 transition-transform duration-300 ease-in-out
-        md:static md:translate-x-0 md:w-64 md:rounded-none md:shadow-none md:border-l-0 md:bg-white/70
-        ${isOpen ? 'translate-x-0' : 'translate-x-full'}
+        className={`
+          fixed top-0 right-0 h-full w-72 bg-white/80 backdrop-blur-xl
+          border-l border-white/60 shadow-2xl flex flex-col font-cairo z-50
+          transition-transform duration-300 ease-in-out
+          md:static md:translate-x-0 md:w-64 md:shadow-none md:border-l-0 md:bg-white/70
+          ${isOpen ? "translate-x-0" : "translate-x-full"}
         `}
       >
         {/* رأس الشريط */}
-        <div className="p-5 border-b border-gray-200/60">
+        <div className="p-5 border-b border-gray-200/60 flex-shrink-0">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold text-gray-800">لوحة التحكم</h1>
             <button
@@ -78,7 +82,7 @@ export default function Sidebar() {
           {/* معلومات المستخدم */}
           <div className="mt-5 pt-4 border-t border-gray-200/60">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center shadow-md ring-2 ring-indigo-300/50">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center shadow-md ring-2 ring-indigo-300/50 flex-shrink-0">
                 <span className="text-white text-sm font-bold">
                   {getUserInitials()}
                 </span>
@@ -91,12 +95,20 @@ export default function Sidebar() {
                   {user?.role === "admin"
                     ? "مدير النظام"
                     : user?.role === "manager"
-                      ? "مدير"
-                      : "فني"}
+                    ? "مدير"
+                    : "فني"}
                 </p>
               </div>
             </div>
           </div>
+        </div>
+
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            الإشعارات — في الأعلى بعد الهيدر مباشرةً
+            overflow-visible يضمن ظهور القائمة كاملةً
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+        <div className="flex-shrink-0 px-4 py-3 border-b border-gray-200/60 overflow-visible">
+          <NotificationBell />
         </div>
 
         {/* روابط التنقل */}
@@ -106,7 +118,6 @@ export default function Sidebar() {
           )}
           <SidebarLink to="/dashboard/tickets" icon={<FiList />} label="طلبات الصيانة" onClick={closeSidebar} />
           <SidebarLink to="/dashboard/tickets/new" icon={<FiPlusCircle />} label="طلب جديد" onClick={closeSidebar} />
-
           {user?.role === "admin" && (
             <>
               <SidebarLink to="/dashboard/managers" icon={<FiUsers />} label="المديرين" onClick={closeSidebar} />
@@ -118,19 +129,20 @@ export default function Sidebar() {
         </nav>
 
         {/* تسجيل الخروج */}
-        <button
-          onClick={handleLogout}
-          className="mx-4 mb-5 mt-2 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-red-50/80 text-red-600 hover:bg-red-100 transition-all duration-200 font-medium text-sm border border-red-200/60"
-        >
-          <FiLogOut className="w-5 h-5" />
-          تسجيل الخروج
-        </button>
+        <div className="flex-shrink-0 px-4 pb-5 pt-2">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-red-50/80 text-red-600 hover:bg-red-100 transition-all duration-200 font-medium text-sm border border-red-200/60"
+          >
+            <FiLogOut className="w-5 h-5" />
+            تسجيل الخروج
+          </button>
+        </div>
       </aside>
     </>
   );
 }
 
-// مكون مساعد لرابط القائمة
 function SidebarLink({ to, icon, label, onClick, exact = false }) {
   return (
     <NavLink
