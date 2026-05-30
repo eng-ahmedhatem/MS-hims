@@ -1,5 +1,25 @@
 const Ticket = require('../models/Ticket');
 
+// دالة مساعدة: هل يوجد نشاط فني حقيقي على التذكرة؟
+const hasTechnicianActivity = (ticket) => {
+  // حالة الفني مسجلة
+  if (ticket.technicianStatus && ticket.technicianStatus.trim() !== '') return true;
+  // الحالة تغيرت عن "جديد"
+  if (ticket.status && ticket.status !== 'جديد') return true;
+  // توجد ملاحظة تمت بواسطة شخص مسجل (فني/مدير)
+  if (ticket.notes && ticket.notes.some(n => n.createdBy != null)) return true;
+  return false;
+};
+
+// تصفية التذاكر المقدمة إلى الدالتين
+const filterTicketsForReport = (tickets) => {
+  return tickets.filter(ticket => {
+    if (!ticket.requesterDeleted) return true;          // لم يحذفها مقدم الطلب -> تظهر
+    if (hasTechnicianActivity(ticket)) return true;     // حذفها ولكن يوجد نشاط فني -> تظهر
+    return false;                                      // حذفها ولا يوجد نشاط فني -> لا تظهر
+  });
+};
+
 exports.getMonthlyReportData = async (req, res) => {
   try {
     const { month, year } = req.query;
@@ -10,9 +30,12 @@ exports.getMonthlyReportData = async (req, res) => {
     }
     const startDate = new Date(yearNum, monthNum - 1, 1);
     const endDate = new Date(yearNum, monthNum, 1);
-    const tickets = await Ticket.find({
+    let tickets = await Ticket.find({
       createdAt: { $gte: startDate, $lt: endDate }
     }).populate('assignedTo', 'fullName').sort({ createdAt: 1 });
+
+    // تطبيق فلتر الحذف مع النشاط الفني
+    tickets = filterTicketsForReport(tickets);
 
     res.json(buildReport(tickets, monthNum, yearNum));
   } catch (error) {
@@ -28,9 +51,12 @@ exports.getYearlyReportData = async (req, res) => {
     if (!yearNum) return res.status(400).json({ message: 'السنة مطلوبة' });
     const startDate = new Date(yearNum, 0, 1);
     const endDate = new Date(yearNum + 1, 0, 1);
-    const tickets = await Ticket.find({
+    let tickets = await Ticket.find({
       createdAt: { $gte: startDate, $lt: endDate }
     }).populate('assignedTo', 'fullName').sort({ createdAt: 1 });
+
+    // تطبيق فلتر الحذف مع النشاط الفني
+    tickets = filterTicketsForReport(tickets);
 
     res.json(buildReport(tickets, 0, yearNum, true));
   } catch (error) {

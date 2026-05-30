@@ -46,7 +46,8 @@ technicianStatus: {
       createdAt: { type: Date, default: Date.now }
     }
   ],
-completedAt: { type: Date, default: null }
+completedAt: { type: Date, default: null },
+requesterDeleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
 // توليد رقم التذكرة تلقائياً

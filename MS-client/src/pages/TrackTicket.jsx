@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import StatusBadge from '../components/StatusBadge';
-import { FiRefreshCw, FiTrash2, FiSearch, FiUser, FiClock, FiAlertCircle, FiArrowRight } from 'react-icons/fi';
+import { FiRefreshCw, FiTrash2, FiSearch, FiUser, FiClock, FiArrowRight } from 'react-icons/fi';
 
 export default function TrackTicket() {
   const [ticketNumber, setTicketNumber] = useState('');
@@ -41,10 +41,12 @@ export default function TrackTicket() {
   const handleDelete = async () => {
     if (!window.confirm('هل أنت متأكد من حذف هذه التذكرة؟')) return;
     try {
+      // نداء الحذف المنطقي (يعلّم التذكرة فقط)
       await axios.delete(`/api/tickets/track/${ticket.ticketNumber}`);
-      setTicket(null);
-      setTicketNumber('');
-      alert('تم حذف التذكرة');
+      // نعيد تحميل التذكرة لعرض التغيير
+      const res = await axios.get(`/api/tickets/track/${ticket.ticketNumber}`);
+      setTicket(res.data);
+      // لا نمسح التذكرة من الشاشة بعد الآن
     } catch (err) {
       alert(err.response?.data?.message || 'لا يمكن حذف التذكرة');
     }
@@ -172,7 +174,7 @@ export default function TrackTicket() {
               </div>
 
               {/* قسم تحديث حالة المستخدم (يظهر إذا كانت التذكرة نشطة) */}
-              {(ticket.status !== 'مكتمل' && ticket.status !== 'ملغي') && (
+              {!ticket.requesterDeleted && (ticket.status !== 'مكتمل' && ticket.status !== 'ملغي') && (
                 <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-5 border border-white/60 space-y-4">
                   <h4 className="text-base font-semibold text-gray-700">تحديث حالتك</h4>
                   <div className="flex flex-col sm:flex-row gap-3">
@@ -197,14 +199,20 @@ export default function TrackTicket() {
                 </div>
               )}
 
-              {/* زر الحذف – متاح دائمًا بغض النظر عن حالة التذكرة */}
-              <button
-                onClick={handleDelete}
-                className="w-full bg-red-50/80 hover:bg-red-100 text-red-600 py-3 rounded-2xl font-medium text-sm transition-colors border border-red-200 flex items-center justify-center gap-2"
-              >
-                <FiTrash2 className="w-4 h-4" />
-                حذف التذكرة
-              </button>
+              {/* رسالة الحذف (إن وُجدت) أو زر الحذف */}
+              {ticket.requesterDeleted ? (
+                <div className="w-full bg-yellow-50/80 backdrop-blur-sm border border-yellow-200 rounded-2xl p-4 text-yellow-700 text-sm font-medium text-center">
+                  ⚠️ تم حذف هذه التذكرة بواسطتك
+                </div>
+              ) : (
+                <button
+                  onClick={handleDelete}
+                  className="w-full bg-red-50/80 hover:bg-red-100 text-red-600 py-3 rounded-2xl font-medium text-sm transition-colors border border-red-200 flex items-center justify-center gap-2"
+                >
+                  <FiTrash2 className="w-4 h-4" />
+                  حذف التذكرة
+                </button>
+              )}
             </div>
           )}
         </div>

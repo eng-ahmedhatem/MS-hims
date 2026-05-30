@@ -73,7 +73,7 @@ export default function HomePage() {
 
         {/* التذييل */}
         <div className="mt-12 text-gray-400 text-sm">
-          <p>تم التنفيذ بواسطة <span className="font-bold text-gray-600">م/ أحمد حاتم</span></p>
+          {/* <p>تم التنفيذ بواسطة <span className="font-bold text-gray-600">م/ أحمد حاتم</span></p> */}
         </div>
       </div>
     </div>

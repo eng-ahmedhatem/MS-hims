@@ -23,22 +23,34 @@ exports.trackTicket = async (req, res) => {
     const { ticketNumber } = req.params;
     const ticket = await Ticket.findOne({ ticketNumber }).populate('assignedTo', 'fullName');
     if (!ticket) return res.status(404).json({ message: 'الطلب غير موجود' });
-    res.json(ticket);
+    res.json(ticket); // دائمًا تُعرض حتى لو requesterDeleted = true
   } catch (error) {
     res.status(500).json({ message: 'خطأ في الخادم' });
   }
 };
-
 // الحصول على كل الطلبات (للـ admin/manager)
 exports.getAllTickets = async (req, res) => {
   try {
-    const tickets = await Ticket.find().populate('assignedTo', 'fullName').sort({ createdAt: -1 });
+    let tickets = await Ticket.find().populate('assignedTo', 'fullName').sort({ createdAt: -1 });
+    
+    // تصفية التذاكر المحذوفة بواسطة مقدم الطلب
+    tickets = tickets.filter(ticket => {
+      if (!ticket.requesterDeleted) return true; // ليست محذوفة => تظهر
+
+      // إذا كانت محذوفة، تحقق من وجود نشاط فني
+      const technicianActivity = 
+        (ticket.technicianStatus && ticket.technicianStatus !== '') ||  // حالة الفني مسجلة
+        (ticket.assignedTo && ticket.status !== 'جديد') ||              // تم الإسناد وتغيرت الحالة
+        (ticket.notes && ticket.notes.length > 1); // توجد ملاحظات (أكثر من ملاحظة الحذف التلقائية)
+
+      return technicianActivity; // تظهر فقط إذا وُجد نشاط فني
+    });
+
     res.json(tickets);
   } catch (error) {
     res.status(500).json({ message: 'خطأ في الخادم' });
   }
 };
-
 // الحصول على طلب واحد بالـ ID (للـ admin/manager)
 exports.getTicketById = async (req, res) => {
   try {
@@ -161,12 +173,19 @@ exports.deleteByCreator = async (req, res) => {
     const ticket = await Ticket.findOne({ ticketNumber });
     if (!ticket) return res.status(404).json({ message: 'الطلب غير موجود' });
 
-    // يسمح بالحذف فقط إذا كانت الحالة مكتملة أو ملغاة
-    if (!['مكتمل', 'ملغي'].includes(ticket.status)) {
-      return res.status(400).json({ message: 'يمكن حذف الطلب فقط بعد اكتماله أو إلغائه' });
+    // منع الحذف إذا كان قد تم بالفعل
+    if (ticket.requesterDeleted) {
+      return res.status(400).json({ message: 'التذكرة محذوفة بالفعل' });
     }
 
-    await ticket.deleteOne();
+    // وضع علامة الحذف وإضافة ملاحظة
+    ticket.requesterDeleted = true;
+    ticket.notes.push({ 
+      text: 'تم حذف التذكرة بواسطة مقدم الطلب', 
+      createdBy: null // لا يوجد مستخدم مُسجّل
+    });
+    await ticket.save();
+
     res.json({ message: 'تم حذف التذكرة بنجاح' });
   } catch (error) {
     res.status(500).json({ message: 'خطأ في الخادم' });
